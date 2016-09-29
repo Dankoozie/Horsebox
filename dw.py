@@ -16,7 +16,7 @@ def scandir(directory):
     lst = os.listdir(directory)
     files_dic = {}
     for fle in lst:
-        finfo = os.stat(directory+fle)
+        finfo = os.stat(directory+"/" +fle)
         cf = (0,finfo[6],finfo[9])
         files_dic[fle] = cf
     return files_dic
@@ -96,7 +96,7 @@ class Dirwatcher(threading.Thread):
                 #New file found
                 if( ((fle in self.md) == False) and ((fle in self.MyFiles) == False) ):
                     self.local_file_added(fle)
-                    finfo = os.stat(self.path+fle)
+                    finfo = os.stat(self.path+ "/" + fle)
                     cf = (0,finfo[6],finfo[9])
                     self.md[fle] = cf 
                 #File modified

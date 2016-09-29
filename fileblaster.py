@@ -1,3 +1,4 @@
+import dw
 import hashlib
 import threading
 import time
@@ -95,7 +96,7 @@ class FileO():
     
 
     def Rebroadcast(self):
-        
+        pass
 
 class FileI():
     #Incoming file transfer object
@@ -176,7 +177,8 @@ def Process_chunk(addr,data):
 
 def Process_missing(addr,data):
     hdr = unpack("I",data[:4])
-    if(hdr[0] in IN
+    if(hdr[0] in Outgoing):
+        print("Hai")
 
 def ProcessIncoming(addr,data):
     if(data[0] == 97): Process_announce(addr,data)
@@ -192,6 +194,7 @@ class sendpackets(threading.Thread):
                 #print("OutPackets: " + str(len(OutPackets)))
                 pck = OutPackets.pop()
                 sock.sendto(pck[0],pck[1])                
+            else: time.sleep(0.2)
 
 class listen(threading.Thread):
     def __init__(self):
@@ -209,14 +212,25 @@ listener.start()
 sender = sendpackets()
 sender.start()
 
-F = FileO('20160820_016.jpg')
-print(F.name)
-F.Blast()
+#SharedW = dw.Dirwatcher('Shared',1)
+#SharedW.start()
 
-while(1):
-    time.sleep(1)
-    for a in Incoming:
-        print(Incoming[a].missing,Incoming[a].chunks.keys(),Incoming[a].complete)
-        Incoming[a].reassemble()
+class DirHoor(dw.Dirwatcher):
+    def __init__(self):
+        dw.Dirwatcher.__init__(self,'Shared',1)
+    def local_file_changed(self,filename):
+        print("A load of shite!: " + filename)
+
+hg = DirHoor()
+hg.start()
+#F = FileO('20160820_016.jpg')
+#print(F.name)
+#F.Blast()
+
+#while(1):
+#    time.sleep(1)
+#    for a in Incoming:
+#        print(Incoming[a].missing,Incoming[a].chunks.keys(),Incoming[a].complete)
+#        Incoming[a].reassemble()
 
 
