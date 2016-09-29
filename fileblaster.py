@@ -28,7 +28,7 @@ listen_running = True
 #Network stuff general
 MyFriendlyName = bytes('Sh1tbag','utf-8')
 announce_freq = 19
-atimer = 19
+
 
 #Change buffer size
 print(sock.getsockopt(SOL_SOCKET,SO_RCVBUF))
@@ -198,12 +198,15 @@ def Process_missing(addr,data):
         print("Hai")
 
 def Process_hai(addr,data):
-    print("Peer discovered: " + data[1:])
+    print("Peer discovered: " + str(data[1:],'utf-8'))
 
 def ProcessIncoming(addr,data):
+    print("WHIP")
     if(data[0] == 97): Process_announce(addr,data)
     elif(data[0] == 113): Process_chunk(addr,data)
-    elif(data[0] == 107): Process_hai(addr,data)
+    elif(data[0] == 104): Process_hai(addr,data)
+    else:
+        print(data[0])
     
 def Shout():
     print("Shouting!")
@@ -212,8 +215,10 @@ def Shout():
 class sendpackets(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
-
+        self.atimer = announce_freq
+        
     def run(self):
+
         while(1):
             if(len(OutPackets) > 0):
                 #print("OutPackets: " + str(len(OutPackets)))
@@ -221,12 +226,10 @@ class sendpackets(threading.Thread):
                 sock.sendto(pck[0],pck[1])                
             else:
                 time.sleep(0.2)
-                print(announce_freq)
-                print(atimer)
-                atimer = 324
-                if(atimer < 0):
+                self.atimer -= 0.2
+                if(self.atimer < 0):
                     Shout()
-                    #atimer = announce_freq
+                    self.atimer = announce_freq
                     
 
 class listen(threading.Thread):
