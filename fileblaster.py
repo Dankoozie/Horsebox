@@ -2,6 +2,8 @@ import dw
 import hashlib
 import threading
 import time
+import sqlite3
+
 from socket import *
 from struct import *
 from os.path import getsize
@@ -23,6 +25,11 @@ listen_port = 54779
 sock.bind(('',listen_port))
 listen_running = True
 
+#Network stuff general
+MyFriendlyName = bytes('Sh1tbag','utf-8')
+announce_freq = 19
+atimer = 19
+
 #Change buffer size
 print(sock.getsockopt(SOL_SOCKET,SO_RCVBUF))
 sock.setsockopt(SOL_SOCKET,SO_RCVBUF,1024*1024)
@@ -31,6 +38,16 @@ print(sock.getsockopt(SOL_SOCKET,SO_RCVBUF))
 
 
 OutPackets = []
+
+
+#DB Setup
+sqdb = sqlite3.connect('horsebox.db')
+c = sqdb.cursor()
+c.execute('''CREATE TABLE IF NOT EXISTS Myfiles  (fname text PRIMARY KEY, md5 text, mtime int)''')
+c.execute('''CREATE TABLE IF NOT EXISTS Peers  (uuid text PRIMARY KEY,friendlyname text, lastlocal_ip text,lastseen int, sharedkey text )''')
+c.execute('''CREATE TABLE IF NOT EXISTS Peerfiles  (text, bnum text, starttime int, duration real, cents real, wcc text, year int, month int)''')
+
+
 
 
 def SendToc(folder,addr):
@@ -180,9 +197,17 @@ def Process_missing(addr,data):
     if(hdr[0] in Outgoing):
         print("Hai")
 
+def Process_hai(addr,data):
+    print("Peer discovered: " + data[1:])
+
 def ProcessIncoming(addr,data):
     if(data[0] == 97): Process_announce(addr,data)
     elif(data[0] == 113): Process_chunk(addr,data)
+    elif(data[0] == 107): Process_hai(addr,data)
+    
+def Shout():
+    print("Shouting!")
+    OutPackets.insert(0,(b'h'+MyFriendlyName,(bcast_addr,bcast_port)))
 
 class sendpackets(threading.Thread):
     def __init__(self):
@@ -194,7 +219,15 @@ class sendpackets(threading.Thread):
                 #print("OutPackets: " + str(len(OutPackets)))
                 pck = OutPackets.pop()
                 sock.sendto(pck[0],pck[1])                
-            else: time.sleep(0.2)
+            else:
+                time.sleep(0.2)
+                print(announce_freq)
+                print(atimer)
+                atimer = 324
+                if(atimer < 0):
+                    Shout()
+                    #atimer = announce_freq
+                    
 
 class listen(threading.Thread):
     def __init__(self):
@@ -224,8 +257,8 @@ class DirHoor(dw.Dirwatcher):
 hg = DirHoor()
 hg.start()
 #F = FileO('20160820_016.jpg')
-#print(F.name)
-#F.Blast()
+#print(F.name) 0868805980
+#F.Blast() 0.15
 
 #while(1):
 #    time.sleep(1)
