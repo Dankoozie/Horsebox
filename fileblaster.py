@@ -8,6 +8,7 @@ from math import ceil
 from random import randint
 
 CHUNK_SIZE = 32768
+BC_MAX_SIZE = 32768*32
 
 #Active file transfers
 Incoming = {}
@@ -30,6 +31,9 @@ print(sock.getsockopt(SOL_SOCKET,SO_RCVBUF))
 
 OutPackets = []
 
+
+def SendToc(folder,addr):
+    pass
 
 def BAnnounce(fname,ftid,size,chunk_count,enc = None):
     #Announce a new / changed file on the network
