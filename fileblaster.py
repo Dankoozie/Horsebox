@@ -3,6 +3,7 @@ import hashlib
 import threading
 import time
 import sqlite3
+import uuid
 
 from socket import *
 from struct import *
@@ -26,7 +27,6 @@ sock.bind(('',listen_port))
 listen_running = True
 
 #Network stuff general
-MyFriendlyName = bytes('Sh1tbag','utf-8')
 announce_freq = 19
 
 
@@ -47,11 +47,23 @@ c.execute('''CREATE TABLE IF NOT EXISTS Myfiles  (fname text PRIMARY KEY, md5 te
 c.execute('''CREATE TABLE IF NOT EXISTS Peers  (uuid text PRIMARY KEY,friendlyname text, lastlocal_ip text,lastseen int, sharedkey text )''')
 c.execute('''CREATE TABLE IF NOT EXISTS Peerfiles  (text, bnum text, starttime int, duration real, cents real, wcc text, year int, month int)''')
 
+class MyUser():
+    def __init__(self):
+        self.uuid = uuid.uuid4().bytes
+        self.MyFriendlyName = bytes('Sh1tbag','utf-8')
+        self.guid = 4
 
 
+
+    
 
 def SendToc(folder,addr):
-    pass
+    a = dw.scandir(folder)
+    print(a)
+    for f in a:
+        a[f] = (a[f][0],a[f][1],a[f][2], dw.GetEmmdie('Shared/' + f))
+        print(a[f])
+        
 
 def BAnnounce(fname,ftid,size,chunk_count,enc = None):
     #Announce a new / changed file on the network
@@ -209,8 +221,8 @@ def ProcessIncoming(addr,data):
         print(data[0])
     
 def Shout():
-    print("Shouting!")
-    OutPackets.insert(0,(b'h'+MyFriendlyName,(bcast_addr,bcast_port)))
+    #print("Shouting!")
+    OutPackets.insert(0,(b'h'+Mu.MyFriendlyName,(bcast_addr,bcast_port)))
 
 class sendpackets(threading.Thread):
     def __init__(self):
@@ -243,30 +255,27 @@ class listen(threading.Thread):
             ProcessIncoming(addr, data)
                           
 
-listener = listen()
-listener.start()
-sender = sendpackets()
-sender.start()
-
-#SharedW = dw.Dirwatcher('Shared',1)
-#SharedW.start()
-
 class DirHoor(dw.Dirwatcher):
     def __init__(self):
         dw.Dirwatcher.__init__(self,'Shared',1)
     def local_file_changed(self,filename):
         print("A load of shite!: " + filename)
 
+Mu = MyUser()
+print(Mu.uuid)
+
+
+listener = listen()
+listener.start()
+sender = sendpackets()
+sender.start()
+
 hg = DirHoor()
 hg.start()
+
+SendToc('Shared','wun-nine-too')
+
 #F = FileO('20160820_016.jpg')
 #print(F.name) 0868805980
 #F.Blast() 0.15
-
-#while(1):
-#    time.sleep(1)
-#    for a in Incoming:
-#        print(Incoming[a].missing,Incoming[a].chunks.keys(),Incoming[a].complete)
-#        Incoming[a].reassemble()
-
-
+#This line of code was sponsored by: Crafted Fitted Furniture Ltd 6 Bridge Street, Mallow, Co.Cork 

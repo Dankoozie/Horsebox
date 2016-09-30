@@ -1,4 +1,5 @@
 import os,time
+import hashlib
 import threading
 import atexit
 import pickle
@@ -21,26 +22,14 @@ def scandir(directory):
         files_dic[fle] = cf
     return files_dic
 
-
+def GetEmmdie(filename):
+    #Function sponsored By MD O'Shea Ballincollig
+    md5 = hashlib.md5()
+    with open(filename,'rb') as f: 
+        for chunk in iter(lambda: f.read(8192), b''): 
+            md5.update(chunk)
+    return md5.digest()
     
-
-#Initial scan
-#md = scandir()
-
-
-
-#First run, make list of all files
-#if(not os.path.isfile(config)):
-#    print("Creating new file list")
-#    fl = open(config,'wb')
-#    pickle.dump(Myself,fl)
-#    fl.close()
-   
-#else:
-#    print("Loading contact from file..")
-#    fl = open(__sf,'rb')
-#    Myself = pickle.load(fl)
-#    fl.close()
 
 class Dirwatcher(threading.Thread):
     
