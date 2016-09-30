@@ -6,6 +6,8 @@ import pickle
 
 config = ".lansync"
 
+Myfiles_enum = {}
+Myfiles_meta = {}
 
 NetFiles = []
 uplist = []
@@ -29,6 +31,8 @@ def GetEmmdie(filename):
         for chunk in iter(lambda: f.read(8192), b''): 
             md5.update(chunk)
     return md5.digest()
+
+
     
 
 class Dirwatcher(threading.Thread):

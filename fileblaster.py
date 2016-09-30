@@ -43,7 +43,7 @@ OutPackets = []
 #DB Setup
 sqdb = sqlite3.connect('horsebox.db')
 c = sqdb.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS Myfiles  (fname text PRIMARY KEY, md5 text, mtime int)''')
+c.execute('''CREATE TABLE IF NOT EXISTS Myfiles  (fid int PRIMARY KEY, fname text UNIQUE, md5 text, size int, ctime int, mtime int, atime int)''')
 c.execute('''CREATE TABLE IF NOT EXISTS Peers  (uuid text PRIMARY KEY,friendlyname text, lastlocal_ip text,lastseen int, sharedkey text )''')
 c.execute('''CREATE TABLE IF NOT EXISTS Peerfiles  (text, bnum text, starttime int, duration real, cents real, wcc text, year int, month int)''')
 
