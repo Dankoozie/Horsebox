@@ -3,11 +3,22 @@ from netifaces import *
 #0874474321
 lsn = interfaces()
 
+
+def getaddrs(adic):
+    rt = []
+    for a in adic:
+        if('addr' in a): rt.append(a['addr'])
+    return rt
+
 def getfe80s():
-    fe80dic = {}
+    al = []
     for a in lsn:
         adr_l = ifaddresses(a)
-        if(AF_INET6 in adr_l): print(a, adr_l[10])
+        if(AF_INET6 in adr_l): al.append((a,adr_l[AF_INET6]))
+
+    for a in al:
+        return(a[0],getaddrs(a[1]))
+
 
 
 getfe80s()
