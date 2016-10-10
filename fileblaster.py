@@ -1,4 +1,6 @@
+import iface
 import dw
+
 import hashlib
 import threading
 import time
@@ -19,12 +21,22 @@ Incoming = {}
 Outgoing = {}
 
 #Set up socket stuff
-sock = socket(AF_INET6, SOCK_DGRAM)
 bcast_addr = "ff02::1"
 bcast_port = 54779
 listen_port = 54779
-sock.bind(('',listen_port))
 listen_running = True
+
+Linklocals = []
+for x in iface.getfe80s():
+    print(x)
+    for a in x[1]:
+        sk = socket(AF_INET6, SOCK_DGRAM)
+        print(a)
+        sk.bind((a,listen_port))
+        Linklocals.append(sk)
+print(Linklocals)
+
+
 
 #Network stuff general
 announce_freq = 19

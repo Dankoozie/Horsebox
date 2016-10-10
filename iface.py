@@ -21,9 +21,7 @@ def getfe80s():
 
     for a in al:
         fh = getaddrs(a[1],'fe80:')
-        if(fe80.append((a[0],getaddrs(a[1])))
+        if(fh): yield((a[0],getaddrs(a[1])))
+        
 
-    return fe80
 
-
-print(getfe80s())
