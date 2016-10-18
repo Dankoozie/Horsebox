@@ -26,15 +26,17 @@ bcast_port = 54779
 listen_port = 54779
 listen_running = True
 
-Linklocals = []
-for x in iface.getfe80s():
-    print(x)
-    for a in x[1]:
-        sk = socket(AF_INET6, SOCK_DGRAM)
-        print(a)
-        sk.bind((a,listen_port))
-        Linklocals.append(sk)
-print(Linklocals)
+sock = socket(AF_INET6,SOCK_DGRAM)
+sock.bind(('',listen_port))
+#Linklocals = []
+#for x in iface.getfe80s():
+#    print(x)
+#    for a in x[1]:
+#        sk = socket(AF_INET6, SOCK_DGRAM)
+#        print(a)
+#        sk.bind((a,listen_port))
+#        Linklocals.append(sk)
+#print(Linklocals)
 
 
 
@@ -233,7 +235,7 @@ def ProcessIncoming(addr,data):
         print(data[0])
     
 def Shout():
-    #print("Shouting!")
+    print("Shouting!")
     OutPackets.insert(0,(b'h'+Mu.MyFriendlyName,(bcast_addr,bcast_port)))
 
 class sendpackets(threading.Thread):
